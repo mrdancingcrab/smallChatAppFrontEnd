@@ -1,9 +1,11 @@
 const messageContainer = document.getElementById("messageContainer");
 const messageInput = document.getElementById("messageInput");
 const sendMessageButton = document.getElementById("sendMessageButton");
+const typingIndicator = document.getElementById("typingIndicator");
 
 // Example user ID (Replace with actual user authentication)
 const currentUser = "me";
+let typingTimeout;
 
 // Dummy profile pictures (Replace with actual user data)
 const userProfiles = {
@@ -161,6 +163,15 @@ async function sendMessage() {
     }
 }
 
+function simulateOtherUserTyping(user) {
+    typingIndicator.textContent = `${user} is typing...`;
+    typingIndicator.style.display = "inline-block";
+    setTimeout(() => {
+        typingIndicator.style.display = "none";
+    }, 2000); // Hide the indicator after 2 seconds
+}
+
+
 
 
 
@@ -172,13 +183,34 @@ messageInput.addEventListener("keypress", function (event) {
     }
 });
 
+// Event listener for the input field (to show typing indicator while typing)
 messageInput.addEventListener("input", function () {
+    // Show the typing indicator when the user starts typing
+    typingIndicator.style.display = "inline-block";
+
     // Reset the height to shrink it if the user deletes text
     this.style.height = "auto";
     
     // Set the height to match the scrollHeight, which is the total content height
     this.style.height = (this.scrollHeight) + "px";
+
+    // Clear any existing timeout to reset the timer
+    clearTimeout(typingTimeout);
+
+    // If the input field is not empty, keep the indicator visible
+    if (this.value.trim() !== "") {
+        // Start a timeout to hide the typing indicator if the user stops typing
+        typingTimeout = setTimeout(() => {
+            typingIndicator.style.display = "none";
+        }, 1000); // Adjust the delay (2000ms = 2 seconds of inactivity)
+    }
+    else {
+        // Hide the indicator if the input field is cleared
+        typingIndicator.style.display = "none";
+    }
 });
+
+
 
 // Initial message load
 loadMessages();
