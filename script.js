@@ -7,9 +7,9 @@ const currentUser = "me";
 
 // Dummy profile pictures (Replace with actual user data)
 const userProfiles = {
-    "me": "https://e7.pngegg.com/pngimages/217/148/png-clipart-super-mario-8-bit-super-mario-bros-video-game-jump-angle-heroes.png", // Your profile pic
-    "user1": "https://i.imgur.com/5fUVPRP.png", // Another user
-    "user2": "https://i.imgur.com/2WZtC8r.png"  // Another user
+    "me": "https://w7.pngwing.com/pngs/106/506/png-transparent-super-mario-bros-super-nintendo-entertainment-system-super-mario-world-mario-bros.png", // Your profile pic
+    "user1": "https://e7.pngegg.com/pngimages/299/182/png-clipart-super-princess-peach-luigi-mario-yoshi-luigi-super-mario-bros-text-thumbnail.png", // Another user
+    "user2": "https://pbs.twimg.com/media/EEdcOOEUcAAwxra.png"  // Another user
 };
 
 // Load chat messages from API
