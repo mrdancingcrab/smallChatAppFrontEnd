@@ -2,16 +2,17 @@ const messageContainer = document.getElementById("messageContainer");
 const messageInput = document.getElementById("messageInput");
 const sendMessageButton = document.getElementById("sendMessageButton");
 const typingIndicator = document.getElementById("typingIndicator");
-
+const warningMessage = document.getElementById("warningMessage");
 // Example user ID (Replace with actual user authentication)
 const currentUser = "me";
+
 let typingTimeout;
 
 // Dummy profile pictures (Replace with actual user data)
 const userProfiles = {
     "me": "https://w7.pngwing.com/pngs/106/506/png-transparent-super-mario-bros-super-nintendo-entertainment-system-super-mario-world-mario-bros.png", // Your profile pic
     "user1": "https://e7.pngegg.com/pngimages/299/182/png-clipart-super-princess-peach-luigi-mario-yoshi-luigi-super-mario-bros-text-thumbnail.png", // Another user
-    "user2": "https://pbs.twimg.com/media/EEdcOOEUcAAwxra.png"  // Another user
+    "user2": "https://e7.pngegg.com/pngimages/299/182/png-clipart-super-princess-peach-luigi-mario-yoshi-luigi-super-mario-bros-text-thumbnail.png"  // Another user
 };
 
 // Load chat messages from API
@@ -21,9 +22,9 @@ async function loadMessages() {
         if (!response.ok) throw new Error("Failed to fetch messages");
 
         const messages = await response.json();
-        messageContainer.innerHTML = ""; // Clear existing messages
+        messageContainer.innerHTML = ""; 
 
-        let lastSender = null; // Track the last sender to group messages correctly
+        let lastSender = null; y
 
         messages.forEach((msg) => {
             const isCurrentUser = msg.sender === currentUser;
@@ -31,7 +32,6 @@ async function loadMessages() {
 
             let messageGroup;
 
-            // Check if the last message was from the same user
             if (isSameUser) {
                 // If same user, just reuse the previous message group
                 messageGroup = document.querySelector(`.message-group[data-user="${msg.sender}"]:last-of-type`);
@@ -79,7 +79,7 @@ async function loadMessages() {
             messageGroup.lastElementChild.appendChild(messageElement);
 
             // Update lastSender after appending the message
-            lastSender = msg.sender; // Update last sender
+            lastSender = msg.sender; 
         });
 
         // Auto-scroll to the latest message
@@ -93,7 +93,10 @@ async function loadMessages() {
 async function sendMessage() {
     const messageText = messageInput.value.trim();
     if (!messageText) {
-        alert("Please enter a message");
+        warningMessage.style.display = "block"; // Show the warning message
+        setTimeout(() => {
+            warningMessage.style.display = "none"; // Hide it after 3 seconds
+        }, 3000); // 3 seconds timeout
         return;
     }
 
@@ -156,8 +159,7 @@ async function sendMessage() {
         if (!response.ok) throw new Error("Failed to send message");
 
         console.log("Message sent successfully:", messageText);
-        messageInput.value = ""; // Clear input field
-
+        messageInput.value = ""; 
     } catch (error) {
         console.error("Error sending message:", error.message);
     }
@@ -168,19 +170,36 @@ function simulateOtherUserTyping(user) {
     typingIndicator.style.display = "inline-block";
     setTimeout(() => {
         typingIndicator.style.display = "none";
-    }, 2000); // Hide the indicator after 2 seconds
+    }, 0); // Hide the indicator after X seconds
+}
+
+function showWarningMessage() {
+    warningMessage.style.display = 'block';  // Ensure it's visible first
+   
 }
 
 
-
-
-
-// Event listeners
 sendMessageButton.addEventListener("click", sendMessage);
 messageInput.addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         sendMessage();
     }
+});
+
+// When the input field is focused, remove the placeholder
+messageInput.addEventListener("focus", function () {
+    this.removeAttribute("placeholder");
+});
+
+// When the input field loses focus, restore the placeholder if the field is empty
+messageInput.addEventListener("blur", function () {
+    if (this.value === "") {
+        this.setAttribute("placeholder", "Type a message...");
+    }
+});
+
+warningMessage.addEventListener('animationend', function() {
+    warningMessage.style.display = 'none';  // Ensure it's hidden after animation ends
 });
 
 // Event listener for the input field (to show typing indicator while typing)
@@ -211,9 +230,5 @@ messageInput.addEventListener("input", function () {
 });
 
 
-
-// Initial message load
 loadMessages();
 
-// Auto-refresh chat every 5 seconds
-//setInterval(loadMessages, 5000);

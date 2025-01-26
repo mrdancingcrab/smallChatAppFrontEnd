@@ -1,28 +1,37 @@
 @font-face {
-    font-family: 'kongtext'; /* Custom name for the font */
+    font-family: 'kongtext'; 
     src: url('fonts/kongtext.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
+* {
+    cursor: inherit; 
+}
+
 body, html {
     overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     
 }
 
 body {
     font-family: "kongtext", sans-serif;
     background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/fe81f9b1-44b9-4852-9828-078fcd451804/d2dy817-399a8680-2d0b-4578-bf91-ad4d57e583f1.png/v1/fill/w_1200,h_622,q_80,strp/super_mario_bros__background_by_hyp64_d2dy817-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjIyIiwicGF0aCI6IlwvZlwvZmU4MWY5YjEtNDRiOS00ODUyLTk4MjgtMDc4ZmNkNDUxODA0XC9kMmR5ODE3LTM5OWE4NjgwLTJkMGItNDU3OC1iZjkxLWFkNGQ1N2U1ODNmMS5wbmciLCJ3aWR0aCI6Ijw9MTIwMCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.Dv4RoCfRs7O2nd0w2DGO2tOTwlQMcXqt8zVYTvB5gIY');
-    background-size: cover; /* Cover the whole screen */
-    background-position: left; /* Center the image */
-    background-repeat: no-repeat; /* Prevent repeating */
-    background-attachment: fixed; /* Keep it fixed while scrolling */
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
 }
 
 .chat-container {
-    max-width: 1000px;
+    max-width: 1200px;
+    width: 100%;
     overflow-x: hidden;
-    margin: auto;
+    margin: 0 auto;
     background: rgb(2, 2, 2);
     border: solid;
     color: rgb(246,215,32);
@@ -51,22 +60,51 @@ body {
     color: rgb(28,157,238)
 }
 
+.message-input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;         
+    align-items: center;  
+    justify-content: center; 
+    position: relative;    
+}
+
 #messageInput {
     background-color: white;
     width: 100%;
-    max-width: 87%; /* Set max-width to 90% of the parent */
+    max-width: 90%; 
     resize: none; /* Allow resizing both horizontally and vertically */
     overflow: hidden; /* Prevent text overflow */
-    line-height: 1.5; /* Adjust line height for better spacing */
+    line-height: 1.5; 
     padding: 8px;
     box-sizing: border-box;
     min-height: 50px;
     display: inline-flex;
+    flex-grow: 1;
+    border: solid 4px;
+    border-color: rgb(147,205,61);
 }
 
+#messageInput:focus {
+    outline: none;
+    border-color: rgb(147,205,61); /* Keep custom border color if needed */
+}
+
+
+
 #sendMessageButton{
-    margin-left: 10px;
-    width: 100px;
+    margin-left: 20px;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 250px;
+    align-self: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    margin-top: 16px;
 }
 
 #messageContainer {
@@ -94,8 +132,8 @@ body {
 }
 
 .message-group {
-    display: flex; /* Use flexbox to align items horizontally */
-    align-items: flex-start; /* Align the items vertically at the top */
+    display: flex; 
+    align-items: flex-start; 
     margin-bottom: 10px;
     padding-bottom: 8px;
     border-bottom: 1px solid #000000;
@@ -117,15 +155,14 @@ body {
     color: #555;
     margin-bottom: 20px;
     margin-top: 14px;
- /* Adds spacing between username and message */
-    flex-shrink: 0; /* Prevent the username from shrinking */
+    flex-shrink: 0; 
 }
 
 .message-box {
     background-color: rgb(231,108,87);
     color: white;
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 4px;
     max-width: fit-content;
     display: block;
     white-space: pre-wrap;
@@ -133,19 +170,19 @@ body {
     line-height: 1.5;
     word-break: break-word;
     box-sizing: border-box;
+    margin-bottom: 2px;
 }
 
 .sent .message-box {
     color: white;
     background-color: rgb(28,157,238);
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 4px;
     max-width: fit-content; /* Limit the width to 80% of the parent container */
     display: block;
     white-space: pre-wrap; /* Preserve newlines */
-    word-wrap: break-word; /* Wrap words */
+    word-wrap: break-word; 
     line-height: 1.5;
-    word-break: break-word; /* Handle long words that don't fit */
     box-sizing: border-box;
 }
 
@@ -154,9 +191,9 @@ body {
     border-top: none;
 }
 
-/* Messages inside a group */
+
 .message-group.same-user .pfp {
-    visibility: hidden; /* Hide PFP for repeated messages */
+    visibility: hidden; 
 }
 
 .message {
@@ -166,10 +203,36 @@ body {
     margin-bottom: 8px;
 }
 
-.input-group {
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
+.warning-message {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 550px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgb(231, 108, 87); /* Custom red color */
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    animation: fadeInOut 3s ease;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        top: 550px;
+    }
+    50% {
+        opacity: 1;
+        top: 550px;
+    }
+    100% {
+        opacity: 0;
+        top: 550px;
+        visibility: hidden; /* Hide after fade out */
+    }
 }
 
 /* Scrollbar width */
