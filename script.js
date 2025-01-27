@@ -22,11 +22,12 @@ async function loadMessages() {
         if (!response.ok) throw new Error("Failed to fetch messages");
 
         const messages = await response.json();
-        messageContainer.innerHTML = ""; 
+        messageContainer.innerHTML = "";  // Clear the container
 
-        let lastSender = null; y
+        let lastSender = null;
 
-        messages.forEach((msg) => {
+        // Loop through the messages in reverse order (oldest to newest)
+        messages.reverse().forEach((msg) => {
             const isCurrentUser = msg.sender === currentUser;
             const isSameUser = msg.sender === lastSender;
 
@@ -79,7 +80,7 @@ async function loadMessages() {
             messageGroup.lastElementChild.appendChild(messageElement);
 
             // Update lastSender after appending the message
-            lastSender = msg.sender; 
+            lastSender = msg.sender;
         });
 
         // Auto-scroll to the latest message
@@ -89,6 +90,7 @@ async function loadMessages() {
         console.error("Error loading messages:", error.message);
     }
 }
+
 
 async function sendMessage() {
     const messageText = messageInput.value.trim();
@@ -145,7 +147,7 @@ async function sendMessage() {
     // Append message to the existing or new message group
     messageGroup.lastElementChild.appendChild(messageElement);
 
-    // Auto-scroll to latest message
+    // Auto-scroll to the latest message
     messageContainer.scrollTop = messageContainer.scrollHeight;
 
     // Send message to the server (API call)
@@ -165,12 +167,15 @@ async function sendMessage() {
     }
 }
 
+
 function simulateOtherUserTyping(user) {
-    typingIndicator.textContent = `${user} is typing...`;
-    typingIndicator.style.display = "inline-block";
+    const typingText = `${user} is typing...`;
+    typingIndicator.textContent = typingText;
+    typingIndicator.style.display = "block"; // Show inside messageContainer
+
     setTimeout(() => {
-        typingIndicator.style.display = "none";
-    }, 0); // Hide the indicator after X seconds
+        typingIndicator.style.display = "none"; // Hide after a delay
+    }, 2000);
 }
 
 function showWarningMessage() {

@@ -20,7 +20,7 @@ body, html {
 
 body {
     font-family: "kongtext", sans-serif;
-    background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/fe81f9b1-44b9-4852-9828-078fcd451804/d2dy817-399a8680-2d0b-4578-bf91-ad4d57e583f1.png/v1/fill/w_1200,h_622,q_80,strp/super_mario_bros__background_by_hyp64_d2dy817-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjIyIiwicGF0aCI6IlwvZlwvZmU4MWY5YjEtNDRiOS00ODUyLTk4MjgtMDc4ZmNkNDUxODA0XC9kMmR5ODE3LTM5OWE4NjgwLTJkMGItNDU3OC1iZjkxLWFkNGQ1N2U1ODNmMS5wbmciLCJ3aWR0aCI6Ijw9MTIwMCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.Dv4RoCfRs7O2nd0w2DGO2tOTwlQMcXqt8zVYTvB5gIY');
+    background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/fe81f9b1-44b9-4852-9828-078fcd451804/d2dy817-399a8680-2d0b-4578-bf91-ad4d57e583f1.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZlODFmOWIxLTQ0YjktNDg1Mi05ODI4LTA3OGZjZDQ1MTgwNFwvZDJkeTgxNy0zOTlhODY4MC0yZDBiLTQ1NzgtYmY5MS1hZDRkNTdlNTgzZjEucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.9jd3Hc8AcCyYPYhgXebqRZjGgaov8YIpWVci2GPkNwU');
     background-size: cover; 
     background-position: center; 
     background-repeat: no-repeat; 
@@ -60,51 +60,47 @@ body {
     color: rgb(28,157,238)
 }
 
-.message-input-container {
+.input-group {
     display: flex;
-    flex-direction: column;
-    width: 100%;         
-    align-items: center;  
-    justify-content: center; 
-    position: relative;    
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+    margin: 10px auto;
+    gap: 8px;
 }
 
 #messageInput {
+    flex-grow: 1;
     background-color: white;
     width: 100%;
-    max-width: 90%; 
-    resize: none; /* Allow resizing both horizontally and vertically */
-    overflow: hidden; /* Prevent text overflow */
-    line-height: 1.5; 
+    min-height: 40px;
+    max-height: 120px;
+    resize: none;
+    overflow: hidden;
     padding: 8px;
     box-sizing: border-box;
-    min-height: 50px;
-    display: inline-flex;
-    flex-grow: 1;
     border: solid 4px;
     border-color: rgb(147,205,61);
+    display: inline-flex;
 }
 
 #messageInput:focus {
     outline: none;
-    border-color: rgb(147,205,61); /* Keep custom border color if needed */
+    border-color: rgb(147,205,61);
 }
 
-
-
-#sendMessageButton{
-    margin-left: 20px;
-    margin-top: 16px;
-    width: 100%;
-    max-width: 250px;
-    align-self: center;
-}
-
-.input-group {
+.button-group{
     display: flex;
-    flex-direction: column; 
-    align-items: center; 
-    margin-top: 16px;
+    gap: 402px;
+}
+
+#sendMessageButton, #sendFileButton {
+    padding: 10px;
+    width: 240px;
+    color: white;
+    border: solid 2px black;
+    font-size: 16px;
+    cursor: pointer;
 }
 
 #messageContainer {
@@ -119,16 +115,25 @@ body {
     background-color: #b4b4b4;
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
 }
 
 .typing-indicator {
     font-family: "kongtext", sans-serif;
     font-size: 16px;
-    color: #ccc;
-    padding: 5px 0;
-    margin-top: 5px;
-    text-align: left;
+    color: black;
+    background-color: rgb(246,215,32);
+    padding: 8px 12px;
+    border-radius: 4px;
+    max-width: fit-content;
     display: none;
+    white-space: nowrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+    word-break: break-word;
+    box-sizing: border-box;
+    margin-top: 5px;
+    margin-left: 60px; /* Adjust based on PFP size */
 }
 
 .message-group {
@@ -171,6 +176,18 @@ body {
     word-break: break-word;
     box-sizing: border-box;
     margin-bottom: 2px;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .sent .message-box {
@@ -184,6 +201,7 @@ body {
     word-wrap: break-word; 
     line-height: 1.5;
     box-sizing: border-box;
+    
 }
 
 .message-group.same-user {
@@ -209,14 +227,15 @@ body {
     top: 550px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgb(231, 108, 87); /* Custom red color */
-    color: white;
+    background-color: rgb(246,215,32);
+    color: black;
     padding: 10px;
     border-radius: 5px;
+    border: solid 5px white;
     font-size: 16px;
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    animation: fadeInOut 3s ease;
+    animation: fadeInOut 2s ease;
 }
 
 @keyframes fadeInOut {
@@ -224,7 +243,15 @@ body {
         opacity: 0;
         top: 550px;
     }
+    25% {
+        opacity: 0.9;
+        top: 550px;
+    }
     50% {
+        opacity: 1;
+        top: 550px;
+    }
+    99% {
         opacity: 1;
         top: 550px;
     }
