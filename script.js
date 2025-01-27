@@ -7,6 +7,9 @@ const warningMessage = document.getElementById("warningMessage");
 const currentUser = "me";
 
 let typingTimeout;
+let lastMessageCount = 0;
+let warningTimeout;
+
 
 // Dummy profile pictures (Replace with actual user data)
 const userProfiles = {
@@ -18,13 +21,24 @@ const userProfiles = {
 // Load chat messages from API
 async function loadMessages() {
     try {
+        typingIndicator.style.display = "none";
+
         const response = await fetch("https://cloud24chat.azurewebsites.net/api/messages");
         if (!response.ok) throw new Error("Failed to fetch messages");
 
         const messages = await response.json();
-        messageContainer.innerHTML = "";  // Clear the container
+        messageContainer.innerHTML = ""; // Clear the container
 
         let lastSender = null;
+
+        // Play sound if new messages are detected
+        if (messages.length > lastMessageCount) {
+            const newMessageSound = new Audio("/sounds/SuperMarioMessageRecieved.mp3");
+            newMessageSound.play();
+        }
+
+        // Update the message count
+        lastMessageCount = messages.length;
 
         // Loop through the messages in reverse order (oldest to newest)
         messages.reverse().forEach((msg) => {
@@ -83,9 +97,6 @@ async function loadMessages() {
             lastSender = msg.sender;
         });
 
-        // Ensure the typing indicator is hidden after loading messages
-        typingIndicator.style.display = "none";
-
         // Auto-scroll to the latest message
         messageContainer.scrollTop = messageContainer.scrollHeight;
 
@@ -98,11 +109,25 @@ async function loadMessages() {
 
 async function sendMessage() {
     const messageText = messageInput.value.trim();
+
     if (!messageText) {
+        const warningSound = new Audio("/sounds/SuperMarioWarning.mp3");
+
+        // Attempt to play the sound
+        try {
+            await warningSound.play();
+        } catch (error) {
+            console.error("Failed to play warning sound:", error.message);
+        }
+
         warningMessage.style.display = "block"; // Show the warning message
-        setTimeout(() => {
-            warningMessage.style.display = "none"; // Hide it after 3 seconds
-        }, 3000); // 3 seconds timeout
+
+        // Clear any existing timeout to avoid race conditions
+        clearTimeout(warningTimeout);
+        warningTimeout = setTimeout(() => {
+            warningMessage.style.display = "none"; // Hide the warning after 3 seconds
+        }, 3000);
+
         return;
     }
 
@@ -159,33 +184,82 @@ async function sendMessage() {
         const response = await fetch("https://cloud24chat.azurewebsites.net/api/message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: messageText, sender: currentUser })
+            body: JSON.stringify({ text: messageText, sender: currentUser }),
         });
 
         if (!response.ok) throw new Error("Failed to send message");
 
         console.log("Message sent successfully:", messageText);
-        messageInput.value = ""; 
+        messageInput.value = ""; // Clear the input field
     } catch (error) {
         console.error("Error sending message:", error.message);
     }
+
+    // Trigger simulated response
+    simulateResponse();
 }
 
+function simulateResponse() {
+    const simulatedUser = "Peach"; // The hardcoded responder
+    const receiveSound = new Audio("/sounds/SuperMarioMessageRecieved.mp3"); // Path to your sound file
 
-function simulateOtherUserTyping(user) {
-    const typingText = `${user} is typing...`;
-    typingIndicator.textContent = typingText;
-    typingIndicator.style.display = "block"; // Show inside messageContainer
+    console.log("Simulated response triggered"); // Log when the function starts
 
+    // Simulated delay for the response (e.g., 2 seconds)
     setTimeout(() => {
-        typingIndicator.style.display = "none"; // Hide after a delay
-    }, 2000);
+        console.log("Simulated response delay completed"); // Log when the delay finishes
+
+        // Play the sound when the message is received
+        try {
+            receiveSound.play();
+            console.log("Receive sound played successfully");
+        } catch (error) {
+            console.error("Failed to play receive sound:", error.message);
+        }
+
+        // Create a new message from the simulated user
+        const messageGroup = document.createElement("div");
+        messageGroup.classList.add("message-group");
+        messageGroup.setAttribute("data-user", simulatedUser);
+
+        console.log("Created message group for:", simulatedUser); // Log message group creation
+
+        // Add the simulated user's profile picture
+        const pfp = document.createElement("img");
+        pfp.classList.add("pfp");
+        pfp.src = userProfiles[simulatedUser] || "https://e7.pngegg.com/pngimages/299/182/png-clipart-super-princess-peach-luigi-mario-yoshi-luigi-super-mario-bros-text-thumbnail.png"; // Default PFP
+        messageGroup.appendChild(pfp);
+        console.log("Profile picture added for:", simulatedUser); // Log profile picture addition
+
+        // Create the message content container
+        const contentContainer = document.createElement("div");
+        messageGroup.appendChild(contentContainer);
+
+        // Add the simulated user's name
+        const username = document.createElement("div");
+        username.classList.add("username");
+        username.textContent = simulatedUser;
+        contentContainer.appendChild(username);
+        console.log("Username added:", simulatedUser); // Log username addition
+
+        // Add the simulated message
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message-box");
+        messageElement.textContent = "This is an automated response!"; // Simulated message
+        contentContainer.appendChild(messageElement);
+        console.log("Message added: This is an automated response!"); // Log message content
+
+        // Append the message group to the container
+        messageContainer.appendChild(messageGroup);
+        console.log("Message group appended to message container"); // Log appending to container
+
+        // Auto-scroll to the latest message
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+        console.log("Auto-scrolled to latest message"); // Log auto-scroll
+    }, 2000); // Simulated delay of 2 seconds
 }
 
-function showWarningMessage() {
-    warningMessage.style.display = 'block';  // Ensure it's visible first
-   
-}
+
 
 
 sendMessageButton.addEventListener("click", sendMessage);
