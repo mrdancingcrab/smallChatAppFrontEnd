@@ -32,10 +32,11 @@ body {
     width: 100%;
     overflow-x: hidden;
     margin: 0 auto;
-    background: rgb(2, 2, 2);
-    border: solid;
+    background: rgb(27, 27, 27);
+    border: solid 8px black;
+    border-radius: 5px;
     color: rgb(246,215,32);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8); 
     padding: 15px;
     margin-top: 10vh;
 }
@@ -107,7 +108,7 @@ body {
     margin: 0 auto;
     width: 100%;
     max-width: 1200px;
-    padding: 0px
+    padding: 0px 60px;
 }
 
 #sendMessageButton, #sendFileButton {

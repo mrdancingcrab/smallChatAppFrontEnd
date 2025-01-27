@@ -83,6 +83,9 @@ async function loadMessages() {
             lastSender = msg.sender;
         });
 
+        // Ensure the typing indicator is hidden after loading messages
+        typingIndicator.style.display = "none";
+
         // Auto-scroll to the latest message
         messageContainer.scrollTop = messageContainer.scrollHeight;
 
@@ -90,6 +93,7 @@ async function loadMessages() {
         console.error("Error loading messages:", error.message);
     }
 }
+
 
 
 async function sendMessage() {
@@ -207,33 +211,6 @@ warningMessage.addEventListener('animationend', function() {
     warningMessage.style.display = 'none';  // Ensure it's hidden after animation ends
 });
 
-/*
-// Event listener for the input field (to show typing indicator while typing)
-messageInput.addEventListener("input", function () {
-    // Show the typing indicator when the user starts typing
-    typingIndicator.style.display = "inline-block";
-
-    // Reset the height to shrink it if the user deletes text
-    this.style.height = "auto";
-    
-    // Set the height to match the scrollHeight, which is the total content height
-    this.style.height = (this.scrollHeight) + "px";
-
-    // Clear any existing timeout to reset the timer
-    clearTimeout(typingTimeout);
-
-    // If the input field is not empty, keep the indicator visible
-    if (this.value.trim() !== "") {
-        // Start a timeout to hide the typing indicator if the user stops typing
-        typingTimeout = setTimeout(() => {
-            typingIndicator.style.display = "none";
-        }, 1000); // Adjust the delay (2000ms = 2 seconds of inactivity)
-    }
-    else {
-        // Hide the indicator if the input field is cleared
-        typingIndicator.style.display = "none";
-    }
-});*/
 
 messageInput.addEventListener("input", function () {
     console.log("User is typing..."); // Debug log
