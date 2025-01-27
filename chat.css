@@ -61,12 +61,22 @@ body {
 }
 
 .input-group {
+    padding: 10px;
     display: flex;
-    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between dots and the input group */
     width: 100%;
-    max-width: 900px;
-    margin: 10px auto;
-    gap: 8px;
+    max-width: 1200px;
+}
+
+#inputGroupWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the rows horizontally */
+    gap: 10px; /* Space between rows */
+    width: 100%; /* Full width */
+    max-width: 1200px; /* Optional: Limit width for alignment */
+    margin: 0 auto; /* Center horizontally */
 }
 
 #messageInput {
@@ -81,7 +91,7 @@ body {
     box-sizing: border-box;
     border: solid 4px;
     border-color: rgb(147,205,61);
-    display: inline-flex;
+    display: inline-block;
 }
 
 #messageInput:focus {
@@ -91,7 +101,13 @@ body {
 
 .button-group{
     display: flex;
-    gap: 402px;
+    justify-content: space-between; /* Space the buttons to opposite sides */
+    align-items: center; /* Align buttons vertically */
+    gap: 10px; /* Add spacing between buttons (if needed) */
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0px
 }
 
 #sendMessageButton, #sendFileButton {
@@ -115,26 +131,41 @@ body {
     background-color: #b4b4b4;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     scroll-behavior: smooth;
 }
 
 .typing-indicator {
-    font-family: "kongtext", sans-serif;
-    font-size: 16px;
-    color: black;
-    background-color: rgb(246,215,32);
-    padding: 8px 12px;
-    border-radius: 4px;
-    max-width: fit-content;
-    display: none;
-    white-space: nowrap;
-    word-wrap: break-word;
-    line-height: 1.5;
-    word-break: break-word;
-    box-sizing: border-box;
-    margin-top: 5px;
-    margin-left: 60px; /* Adjust based on PFP size */
+    position: absolute; /* Position it relative to the parent */
+    top: -18px; /* Move the dots into the top border (same thickness as the border) */
+    left: 20px; /* Adjust to align with the input field */
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Space between the dots */
 }
+
+.typing-indicator span {
+    width: 8px; /* Dot size */
+    height: 8px; /* Dot size */
+    background-color:black;
+    border-radius: 0%; /* Circular dots */
+    opacity: 0.3;
+    animation: blink 1.5s infinite ease-in-out; /* Blinking animation */
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+
 
 .message-group {
     display: flex; 

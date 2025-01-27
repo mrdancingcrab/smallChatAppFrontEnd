@@ -207,6 +207,7 @@ warningMessage.addEventListener('animationend', function() {
     warningMessage.style.display = 'none';  // Ensure it's hidden after animation ends
 });
 
+/*
 // Event listener for the input field (to show typing indicator while typing)
 messageInput.addEventListener("input", function () {
     // Show the typing indicator when the user starts typing
@@ -232,6 +233,18 @@ messageInput.addEventListener("input", function () {
         // Hide the indicator if the input field is cleared
         typingIndicator.style.display = "none";
     }
+});*/
+
+messageInput.addEventListener("input", function () {
+    console.log("User is typing..."); // Debug log
+    typingIndicator.style.display = "flex";
+
+    clearTimeout(typingTimeout);
+
+    typingTimeout = setTimeout(() => {
+        console.log("User stopped typing."); // Debug log
+        typingIndicator.style.display = "none";
+    }, 500);
 });
 
 
