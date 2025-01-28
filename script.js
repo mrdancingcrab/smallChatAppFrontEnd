@@ -58,7 +58,13 @@ function addMessageToGroup(messageGroup, messageText, timestamp) {
     // Add the message to the group
     messageGroup.lastElementChild.appendChild(messageElement);
 
-    // Add a timestamp after the message
+    // Remove old timestamp if it exists
+    const oldTimestamp = messageGroup.querySelector(".group-timestamp");
+    if (oldTimestamp) {
+        oldTimestamp.remove(); // Remove old timestamp
+    }
+
+    // Add a new timestamp
     const timestampElement = document.createElement("div");
     timestampElement.classList.add("group-timestamp");
     timestampElement.textContent = `Sent: ${timestamp}`;
