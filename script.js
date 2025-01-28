@@ -6,6 +6,7 @@ const warningMessage = document.getElementById("warningMessage");
 // Example user ID (Replace with actual user authentication)
 const currentUser = "me";
 
+let isMuted = false; // Tracks mute state
 let typingTimeout;
 let lastMessageCount = 0;
 let warningTimeout;
@@ -19,6 +20,8 @@ const userProfiles = {
 };
 
 // Load chat messages from API
+let isInitialLoad = true; // Flag to detect the first load of messages
+
 async function loadMessages() {
     try {
         typingIndicator.style.display = "none";
@@ -31,57 +34,37 @@ async function loadMessages() {
 
         let lastSender = null;
 
-        // Play sound if new messages are detected
-        if (messages.length > lastMessageCount) {
-            const newMessageSound = new Audio("/sounds/SuperMarioMessageRecieved.mp3");
-            newMessageSound.play();
-        }
+        messages.reverse().forEach((msg, index) => {
+            console.log("Message Timestamp:", msg.timestamp); // Debug
 
-        // Update the message count
-        lastMessageCount = messages.length;
-
-        // Loop through the messages in reverse order (oldest to newest)
-        messages.reverse().forEach((msg) => {
             const isCurrentUser = msg.sender === currentUser;
             const isSameUser = msg.sender === lastSender;
 
             let messageGroup;
 
             if (isSameUser) {
-                // If same user, just reuse the previous message group
                 messageGroup = document.querySelector(`.message-group[data-user="${msg.sender}"]:last-of-type`);
             } else {
-                // Create a new message group for a new user
+                // Create a new message group for a new sender
                 messageGroup = document.createElement("div");
                 messageGroup.classList.add("message-group");
                 messageGroup.setAttribute("data-user", msg.sender);
 
-                // If the sender is the current user, mark it as a sent message
                 if (isCurrentUser) messageGroup.classList.add("sent");
 
-                // Profile Picture (only for the first message from a user in the group)
                 const pfp = document.createElement("img");
                 pfp.classList.add("pfp");
-                pfp.src = userProfiles[msg.sender] || "https://i.imgur.com/4M34hi2.png"; // Default PFP
+                pfp.src = userProfiles[msg.sender] || "https://i.imgur.com/4M34hi2.png";
+                messageGroup.appendChild(pfp);
 
-                // Only append PFP if this is the first message of the user in the group
-                if (!isSameUser) {
-                    messageGroup.appendChild(pfp);
-                }
-
-                // Create message content container
                 const contentContainer = document.createElement("div");
                 messageGroup.appendChild(contentContainer);
 
-                // Username (Only for first message in group)
-                if (!isSameUser) {
-                    const username = document.createElement("div");
-                    username.classList.add("username");
-                    username.textContent = msg.sender;
-                    contentContainer.appendChild(username);
-                }
+                const username = document.createElement("div");
+                username.classList.add("username");
+                username.textContent = msg.sender;
+                contentContainer.appendChild(username);
 
-                // Append new group
                 messageContainer.appendChild(messageGroup);
             }
 
@@ -90,21 +73,41 @@ async function loadMessages() {
             messageElement.classList.add("message-box");
             messageElement.textContent = msg.text;
 
-            // Append message to the correct group
+            // Append message to the group
             messageGroup.lastElementChild.appendChild(messageElement);
 
-            // Update lastSender after appending the message
+            // Add a timestamp for the last message in the group
+            const isLastMessageInGroup =
+                index === messages.length - 1 || messages[index + 1]?.sender !== msg.sender;
+
+            if (isLastMessageInGroup) {
+                const timestamp = msg.timestamp
+                    ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    : "Unknown Time"; // Fallback if timestamp is missing
+
+                const timestampElement = document.createElement("div");
+                timestampElement.classList.add("group-timestamp");
+                timestampElement.textContent = `Sent: ${timestamp}`;
+
+                // Append timestamp after the last message in the group
+                messageElement.after(timestampElement);
+
+                console.log("Timestamp Element Added:", timestampElement); // Debug
+            }
+
             lastSender = msg.sender;
         });
 
-        // Auto-scroll to the latest message
+        // Makes the scroll to go all the way down
+        setTimeout(() => {
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }, 2);
+        
         messageContainer.scrollTop = messageContainer.scrollHeight;
-
     } catch (error) {
         console.error("Error loading messages:", error.message);
     }
 }
-
 
 
 async function sendMessage() {
@@ -113,7 +116,6 @@ async function sendMessage() {
     if (!messageText) {
         const warningSound = new Audio("/sounds/SuperMarioWarning.mp3");
 
-        // Attempt to play the sound
         try {
             await warningSound.play();
         } catch (error) {
@@ -122,7 +124,6 @@ async function sendMessage() {
 
         warningMessage.style.display = "block"; // Show the warning message
 
-        // Clear any existing timeout to avoid race conditions
         clearTimeout(warningTimeout);
         warningTimeout = setTimeout(() => {
             warningMessage.style.display = "none"; // Hide the warning after 3 seconds
@@ -131,40 +132,33 @@ async function sendMessage() {
         return;
     }
 
-    // Instantly add the message to the UI before waiting for API response
     let lastMessageGroup = document.querySelector(`.message-group[data-user="${currentUser}"]:last-of-type`);
     let messageGroup;
 
-    // Check if the last message was from the current user
     if (lastMessageGroup) {
         messageGroup = lastMessageGroup;
     } else {
-        // Create a new group if the last message was from another user
         messageGroup = document.createElement("div");
         messageGroup.classList.add("message-group", "sent");
         messageGroup.setAttribute("data-user", currentUser);
 
-        // Add Profile Picture only if it's the first message from this user in the group
+        // Add Profile Picture
         const pfp = document.createElement("img");
         pfp.classList.add("pfp");
+        pfp.src = userProfiles[currentUser];
+        messageGroup.appendChild(pfp);
 
-        // Only add profile picture if it doesn't exist in the group
-        if (!messageGroup.querySelector(".pfp")) {
-            pfp.src = userProfiles[currentUser];
-            messageGroup.appendChild(pfp);
-        }
-
-        // Create content container
+        // Add Content Container
         const contentContainer = document.createElement("div");
         messageGroup.appendChild(contentContainer);
 
-        // Username
+        // Add Username
         const username = document.createElement("div");
         username.classList.add("username");
         username.textContent = currentUser;
         contentContainer.appendChild(username);
 
-        // Append new group to message container
+        // Append messageGroup to the messageContainer
         messageContainer.appendChild(messageGroup);
     }
 
@@ -173,8 +167,21 @@ async function sendMessage() {
     messageElement.classList.add("message-box");
     messageElement.textContent = messageText;
 
-    // Append message to the existing or new message group
+    // Append the message to the content container
     messageGroup.lastElementChild.appendChild(messageElement);
+
+    // Remove existing timestamp if present
+    const existingTimestamp = messageGroup.querySelector(".group-timestamp");
+    if (existingTimestamp) existingTimestamp.remove();
+
+    // Add a timestamp underneath the last message
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timestampElement = document.createElement("div");
+    timestampElement.classList.add("group-timestamp");
+    timestampElement.textContent = `Sent: ${timestamp}`;
+
+    // Append the timestamp **after the last message**
+    messageElement.after(timestampElement);
 
     // Auto-scroll to the latest message
     messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -196,8 +203,12 @@ async function sendMessage() {
     }
 
     // Trigger simulated response
-    simulateResponse();
+    //simulateResponse();
 }
+
+
+
+/*
 
 function simulateResponse() {
     const simulatedUser = "Peach"; // The hardcoded responder
@@ -258,8 +269,23 @@ function simulateResponse() {
         console.log("Auto-scrolled to latest message"); // Log auto-scroll
     }, 2000); // Simulated delay of 2 seconds
 }
+*/
 
 
+document.getElementById("muteButton").addEventListener("click", () => {
+    isMuted = !isMuted; // Toggle mute state
+    const button = document.getElementById("muteButton");
+
+    if (isMuted) {
+        // Mute sounds
+        button.textContent = "Unmute"; // Update button text
+        Audio.prototype.play = function () {}; // Override play function to disable sounds
+    } else {
+        // Unmute sounds
+        button.textContent = "Mute"; // Update button text
+        delete Audio.prototype.play; // Restore play functionality
+    }
+});
 
 
 sendMessageButton.addEventListener("click", sendMessage);
@@ -299,5 +325,5 @@ messageInput.addEventListener("input", function () {
 });
 
 
-loadMessages();
 
+loadMessages();
