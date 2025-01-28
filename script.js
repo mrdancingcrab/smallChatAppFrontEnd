@@ -5,16 +5,18 @@ const typingIndicator = document.getElementById("typingIndicator");
 const warningMessage = document.getElementById("warningMessage");
 const muteButton = document.getElementById("muteButton");
 
+
 const currentUser = "me";
 let isMuted = false; // Tracks mute state
 let typingTimeout;
 let warningTimeout;
 let isInitialLoad = true; // Detects the first message load
+let isTypingVisible = false; // Track if the dots are currently shown
+let lastTypingState = false; // Store last state to prevent unnecessary updates
 
 const userProfiles = {
-    me: "https://w7.pngwing.com/pngs/106/506/png-transparent-super-mario-bros-super-nintendo-entertainment-system-super-mario-world-mario-bros.png",
-    user1: "https://e7.pngegg.com/pngimages/299/182/png-clipart-super-princess-peach-luigi-mario-yoshi-luigi-super-mario-bros-text-thumbnail.png",
-    user2: "https://e7.pngegg.com/pngimages/299/182/png-clipart-super-princess-peach-luigi-mario-yoshi-luigi-super-mario-bros-text-thumbnail.png",
+    me: "/img/mario.png",
+    user1: "/img/peach.png",
 };
 
 // Helper function to create a new message group
@@ -49,6 +51,10 @@ function addMessageToGroup(messageGroup, messageText, timestamp) {
     messageElement.classList.add("message-box");
     messageElement.textContent = messageText;
 
+    // Add reaction functionality
+    const reactionContainer = createReactionContainer();
+    messageElement.appendChild(reactionContainer);
+
     // Add the message to the group
     messageGroup.lastElementChild.appendChild(messageElement);
 
@@ -59,11 +65,37 @@ function addMessageToGroup(messageGroup, messageText, timestamp) {
     messageElement.after(timestampElement);
 }
 
+// Create a reaction container (❤️ button and count)
+function createReactionContainer() {
+    const reactionContainer = document.createElement("div");
+    reactionContainer.classList.add("reaction-container");
+
+    const heartIcon = document.createElement("i");
+    heartIcon.classList.add("nes-icon", "heart");
+
+    // ❤️ Click event: Keep heart visible in the same spot
+    heartIcon.addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent accidental message clicks
+        reactionContainer.classList.add("pinned"); // Lock visibility
+    });
+
+    reactionContainer.appendChild(heartIcon);
+    return reactionContainer;
+}
+
+// Add reaction logic (click events for reactions)
+document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("reaction-button")) {
+        const reactionCountSpan = event.target.nextElementSibling;
+        let currentCount = parseInt(reactionCountSpan.textContent, 10);
+        reactionCountSpan.textContent = currentCount + 1; // Increment reaction count
+    }
+});
+
 // Load chat messages
 async function loadMessages() {
     try {
-        // Temporarily disable typing indicator during message reload
-        typingIndicator.style.display = "none";
+        typingIndicator.style.display = "none"; // Temporarily disable typing indicator
 
         const response = await fetch("https://cloud24chat.azurewebsites.net/api/messages");
         if (!response.ok) throw new Error("Failed to fetch messages");
@@ -82,31 +114,17 @@ async function loadMessages() {
             if (isSameUser) {
                 messageGroup = document.querySelector(`.message-group[data-user="${msg.sender}"]:last-of-type`);
             } else {
-                messageGroup = document.createElement("div");
-                messageGroup.classList.add("message-group");
-                messageGroup.setAttribute("data-user", msg.sender);
-
-                if (isCurrentUser) messageGroup.classList.add("sent");
-
-                const pfp = document.createElement("img");
-                pfp.classList.add("pfp");
-                pfp.src = userProfiles[msg.sender] || "https://i.imgur.com/4M34hi2.png";
-                messageGroup.appendChild(pfp);
-
-                const contentContainer = document.createElement("div");
-                messageGroup.appendChild(contentContainer);
-
-                const username = document.createElement("div");
-                username.classList.add("username");
-                username.textContent = msg.sender;
-                contentContainer.appendChild(username);
-
-                messageContainer.appendChild(messageGroup);
+                messageGroup = createMessageGroup(msg.sender, isCurrentUser);
             }
 
             const messageElement = document.createElement("div");
             messageElement.classList.add("message-box");
             messageElement.textContent = msg.text;
+
+            // Add reaction container
+            const reactionContainer = createReactionContainer();
+            messageElement.appendChild(reactionContainer);
+
             messageGroup.lastElementChild.appendChild(messageElement);
 
             const isLastMessageInGroup =
@@ -126,11 +144,8 @@ async function loadMessages() {
             lastSender = msg.sender;
         });
 
-        // Scroll to the bottom after loading messages
         setTimeout(() => {
             messageContainer.scrollTop = messageContainer.scrollHeight;
-
-            // Restore typing indicator after messages are loaded
             if (messageInput.value.trim().length > 0) {
                 typingIndicator.style.display = "flex";
             }
@@ -140,6 +155,8 @@ async function loadMessages() {
     }
 }
 
+// Trigger simulated typing every 5 seconds
+//setInterval(simulateTyping, 5000);
 
 // Send a message
 async function sendMessage() {
@@ -168,7 +185,7 @@ async function sendMessage() {
 
         if (!response.ok) throw new Error("Failed to send message");
 
-        messageInput.value = ""; 
+        messageInput.value = "";
     } catch (error) {
         console.error("Error sending message:", error.message);
     }
@@ -186,15 +203,45 @@ function playWarningSound() {
     }
 }
 
+
+
+async function checkTypingUsers() {
+    try {
+        const response = await fetch("https://cloud24chat.azurewebsites.net/api/messages");
+        if (!response.ok) throw new Error("Failed to check typing users");
+
+        const typingUsers = await response.json();
+
+        // ✅ Check if at least one other user (not currentUser) is typing
+        const someoneElseTyping = typingUsers.some(user => user !== currentUser);
+
+        // ✅ Only update if the state actually changes (prevents flickering)
+        if (someoneElseTyping !== lastTypingState) {
+            typingIndicator.style.display = someoneElseTyping ? "flex" : "none";
+            lastTypingState = someoneElseTyping; // Store new state
+        }
+    } catch (error) {
+        console.error("Error checking typing users:", error.message);
+    }
+}
+
 // Show a warning message
 function showWarningMessage() {
     warningMessage.style.display = "block";
+    warningMessage.style.visibility = "visible";
+    warningMessage.style.animation = "fadeInOut 2s ease";
 
     clearTimeout(warningTimeout);
+
     warningTimeout = setTimeout(() => {
         warningMessage.style.display = "none";
-    }, 3000);
+    }, 2000);
 }
+
+warningMessage.addEventListener("animationend", () => {
+    warningMessage.style.visibility = "hidden";
+    warningMessage.style.display = "none";
+});
 
 // Toggle mute button
 muteButton.addEventListener("click", () => {

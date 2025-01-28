@@ -32,7 +32,7 @@ body::before {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-image: url('https://images.squarespace-cdn.com/content/v1/5fe4caeadae61a2f19719512/95b8167f-70ec-4b76-b576-db23a109ce77/Super+Mario+Cloud'); /* Add your image URL */
+    background-image: url("./img/15151ead-8543-40dd-b910-f4823d26e41a.jpg"); /* Example for a local file */
     background-size: cover; /* Ensure the image covers the whole area */
     background-position: center;
     filter: blur(100px); /* Apply the blur */
@@ -192,20 +192,9 @@ body::before {
     word-break: break-word;
     box-sizing: border-box;
     margin-bottom: 5px;
+    margin-right: 100px;
     animation: slideUp 0.3s ease-out;
-}
-
-.sent .message-box {
-    color: white;
-    background-color: rgb(28,157,238);
-    padding: 8px 12px;
-    border-radius: 4px;
-    max-width: fit-content; /* Limit the width to 80% of the parent container */
-    display: block;
-    white-space: pre-wrap; /* Preserve newlines */
-    word-wrap: break-word; 
-    line-height: 1.5;
-    box-sizing: border-box;
+    position: relative;
 }
 
 @keyframes slideUp {
@@ -218,7 +207,52 @@ body::before {
         opacity: 1;
     }
 }
+.sent .message-box {
+    background-color: rgb(28, 157, 238); /* 🔵 Blue color */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    max-width: fit-content;
+    display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+    word-break: break-word;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    animation: slideUp 0.3s ease-out;
+    position: relative;
+}
 
+
+.reaction-container {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none; /* 🔴 Hidden initially */
+    cursor: pointer;
+    font-size: 12px;
+    color: #ff0000;
+    transition: transform 0.2s ease;
+    transform: scale(0.7);
+    margin-top: -20px;
+    margin-right: -21px;
+}
+
+.reaction-container:hover {
+    transform: scale(1);
+    
+}
+
+/* 2️⃣ Show heart when hovering over the message */
+.message-box:hover .reaction-container {
+    display: inline-block; /* 🟢 Appears on hover */
+}
+
+/* 3️⃣ When clicked, keep it visible at the same position */
+.reaction-container.pinned {
+    display: inline-block !important; /* 🔒 Force it to stay visible */
+}
 
 .typing-indicator {
     position: absolute; /* Position it relative to the parent */
@@ -310,6 +344,7 @@ body::before {
     width: 100%;
     max-width: 1200px;
     padding: 0px 60px;
+    margin-top: 10px;
 }
 
 #sendMessageButton, #sendFileButton {
@@ -321,13 +356,18 @@ body::before {
     cursor: pointer;
 }
 
+
+#cloud-label{
+    margin-top: 12px;
+}
 .warning-message {
     display: none; /* Hidden by default */
+    visibility: hidden; /* Ensure it's not visible */
     position: fixed;
     top: 550px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgb(246,215,32);
+    background-color: rgb(246, 215, 32);
     color: black;
     padding: 10px;
     border-radius: 5px;
@@ -335,32 +375,24 @@ body::before {
     font-size: 16px;
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    animation: fadeInOut 2s ease;
 }
 
 @keyframes fadeInOut {
     0% {
         opacity: 0;
-        top: 550px;
     }
     25% {
-        opacity: 0.9;
-        top: 550px;
-    }
-    50% {
         opacity: 1;
-        top: 550px;
     }
-    99% {
+    75% {
         opacity: 1;
-        top: 550px;
     }
     100% {
         opacity: 0;
-        top: 550px;
-        visibility: hidden; /* Hide after fade out */
     }
 }
+
+
 
 /* Scrollbar width */
 ::-webkit-scrollbar {
